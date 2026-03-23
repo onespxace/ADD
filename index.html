@@ -3,144 +3,589 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>安享伴 - 智慧养老（GitHub Pages 专用版）</title>
+    <title>安享伴 - 适老化小程序演示</title>
     <style>
+        /* 全局及变量定义 */
         :root {
-            --primary-teal: #16A085;
-            --primary-orange: #D35400;
-            --primary-red: #C0392B;
-            --bg-deep-blue: #2C3E50;
-            --bg-green: #27AE60;
-            --bg-yellow: #F1C40F;
-            --bg-purple: #8E44AD;
-            --text-white: #ECF0F1;
-            --border-width: 4px;
+            --primary-orange: #FF8C00;
+            --primary-yellow: #FFA500;
+            --danger-red: #E63946;
+            --bg-light: #F7F9FC;
+            --text-main: #333333;
+            --text-sub: #666666;
+            --card-bg: #FFFFFF;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #E0E6ED; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
+        body {
+            background-color: #e0e5ec; /* 外部网页背景色 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 手机外壳模拟 */
         .phone-mockup {
-            width: 375px; height: 812px; background: #111; border-radius: 40px; padding: 12px; position: relative;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.4); overflow: hidden;
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255,255,255,0.2);
+            position: relative;
         }
 
-        .phone-status-bar {
-            position: absolute; top: 0; left: 0; width: 100%; height: 44px; background: #111;
-            display: flex; justify-content: space-between; align-items: center; padding: 0 25px; z-index: 10;
-            color: white; font-size: 14px; font-weight: 600;
+        /* 手机屏幕区域 */
+        .screen {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-light);
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
         }
 
-        .wechat-capsule {
-            display: flex; align-items: center; background: rgba(255, 255, 255, 0.2);
-            border-radius: 20px; padding: 4px 10px; border: 1px solid rgba(255,255,255,0.1);
-        }
-        .capsule-dot { width: 4px; height: 4px; background: white; border-radius: 50%; box-shadow: 8px 0 0 white, -8px 0 0 white; }
-        .capsule-line { width: 1px; height: 16px; background: rgba(255,255,255,0.3); margin: 0 10px; }
-        .capsule-circle { width: 16px; height: 16px; border: 2px solid white; border-radius: 50%; }
-
-        .screen { width: 100%; height: 100%; background-color: var(--bg-deep-blue); border-radius: 30px; overflow: hidden; position: relative; padding-top: 44px; }
-
+        /* 页面切换动画基础设置 */
         .page {
-            position: absolute; top: 44px; left: 0; width: 100%; height: calc(100% - 44px);
-            display: flex; flex-direction: column; opacity: 0; pointer-events: none;
-            transition: all 0.3s ease; transform: translateY(20px); overflow-y: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(30px);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            overflow-y: auto;
         }
-        .page.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
-        /* 首页设计 */
-        .home-title { text-align: center; padding: 30px 20px; background: var(--primary-teal); color: var(--text-white); border-bottom: var(--border-width) solid #FFF; }
-        .home-title h1 { font-size: 36px; font-weight: 900; }
+        .page.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
 
-        .home-buttons { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; padding: 20px 0; border-bottom: var(--border-width) solid #FFF; }
+        /* 顶部导航栏 (子页面用) */
+        .nav-bar {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            background: var(--card-bg);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .back-btn {
+            font-size: 24px;
+            color: var(--text-main);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .nav-title {
+            flex: 1;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-main);
+            padding-right: 24px; /* 平衡返回按钮的宽度 */
+        }
+
+        /* ---------------- 第1页：首页 ---------------- */
+        #page-home {
+            padding: 40px 20px 20px;
+            background: linear-gradient(180deg, #fff3e0 0%, var(--bg-light) 30%);
+        }
+
+        .home-header {
+            text-align: center;
+            margin-bottom: 40px;
+            margin-top: 20px;
+        }
+
+        .home-header h1 {
+            font-size: 36px;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .home-header p {
+            font-size: 18px;
+            color: var(--text-sub);
+        }
+
         .big-btn {
-            width: 85%; margin: 0 auto; border-radius: 20px; padding: 25px; color: var(--text-white);
-            border: var(--border-width) solid #FFF; cursor: pointer; display: flex; align-items: center;
+            width: 80%;
+            margin: 0 auto 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px 0;
+            border-radius: 25px;
+            font-size: 26px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
         }
-        .btn-call { background: var(--primary-orange); }
-        .btn-emergency { background: var(--primary-red); }
-        .big-btn span { font-size: 28px; font-weight: 900; margin-left: 15px; }
 
-        .home-links { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg-deep-blue); }
-        .link-item { padding: 25px; border: 2px solid #FFF; cursor: pointer; text-align: center; color: white; }
-        .link-item h3 { font-size: 22px; }
+        .big-btn:active {
+            transform: scale(0.96);
+        }
 
-        /* 列表页设计 */
-        .page-header { display: flex; align-items: center; padding: 15px 20px; background: var(--primary-teal); color: white; border-bottom: var(--border-width) solid #FFF; }
-        .back-btn { width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px; cursor: pointer; }
+        .btn-call {
+            background: linear-gradient(135deg, var(--primary-yellow), var(--primary-orange));
+            box-shadow: 0 10px 20px rgba(255, 140, 0, 0.3);
+        }
 
-        .grid-services { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
-        .service-box { background: white; border-radius: 20px; padding: 10px; border: 3px solid #FFF; text-align: center; }
-        .service-box img { width: 100%; height: 90px; border-radius: 12px; object-fit: cover; background: #eee; }
-        .service-box h3 { font-size: 20px; margin-top: 8px; color: var(--bg-deep-blue); }
+        .btn-emergency {
+            background: linear-gradient(135deg, #FF6B6B, var(--danger-red));
+            box-shadow: 0 10px 20px rgba(230, 57, 70, 0.3);
+        }
 
-        .wiki-card { background: white; border-radius: 20px; padding: 15px; margin: 10px 15px; display: flex; align-items: center; border: 3px solid #FFF; }
-        .wiki-card img { width: 70px; height: 70px; border-radius: 10px; margin-right: 15px; }
+        .home-links {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px auto;
+            width: 90%;
+        }
 
-        .pulsing { animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .link-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 15px 10px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            cursor: pointer;
+            width: 30%;
+        }
+
+        .link-item span {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .home-footer {
+            margin-top: auto;
+            text-align: center;
+            font-size: 16px;
+            color: #999;
+            padding-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        /* ---------------- 第2页：呼叫与急救通用 ---------------- */
+        .status-page {
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* 呼吸灯特效 */
+        @keyframes pulse-orange {
+            0% { box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.5); }
+            70% { box-shadow: 0 0 0 30px rgba(255, 140, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 140, 0, 0); }
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.5); }
+            70% { box-shadow: 0 0 0 40px rgba(230, 57, 70, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(230, 57, 70, 0); }
+        }
+
+        .calling-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--primary-yellow), var(--primary-orange));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            margin: 40px auto;
+            animation: pulse-orange 2s infinite;
+        }
+
+        .emergency-icon {
+            width: 140px;
+            height: 140px;
+            background: linear-gradient(135deg, #FF6B6B, var(--danger-red));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            color: white;
+            margin: 20px auto 40px;
+            animation: pulse-red 1.5s infinite;
+        }
+
+        .status-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 30px;
+        }
+        
+        .red-alert {
+            color: var(--danger-red);
+            font-size: 32px;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            text-align: left;
+            margin-bottom: 40px;
+        }
+
+        .info-card p {
+            font-size: 18px;
+            color: var(--text-main);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .info-card p:last-child { margin-bottom: 0; }
+        
+        .sync-list {
+            margin: 15px 0;
+            padding-left: 10px;
+        }
+        .sync-list li {
+            font-size: 20px;
+            color: #2a9d8f;
+            list-style: none;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .cancel-btn {
+            padding: 18px 50px;
+            border-radius: 30px;
+            background: #E0E0E0;
+            color: #555;
+            font-size: 22px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* ---------------- 第4页：上门服务 ---------------- */
+        .service-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .service-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.04);
+            text-align: center;
+            padding-bottom: 15px;
+        }
+
+        .service-img {
+            width: 100%;
+            height: 120px;
+            background-color: #e9ecef; /* 图片占位符底色 */
+            object-fit: cover;
+            display: block;
+        }
+
+        .service-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--text-main);
+            margin: 15px 0 5px;
+        }
+
+        .service-desc {
+            font-size: 16px;
+            color: var(--text-sub);
+        }
+
+        .service-bottom {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .book-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            box-shadow: 0 8px 15px rgba(0, 194, 255, 0.3);
+            cursor: pointer;
+        }
+
+        .book-sub {
+            display: block;
+            margin-top: 10px;
+            font-size: 16px;
+            color: var(--text-sub);
+        }
+
+        /* ---------------- 第5页：生活百科 ---------------- */
+        .encyclopedia-content {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-orange);
+            margin-bottom: 15px;
+            border-left: 6px solid var(--primary-orange);
+            padding-left: 10px;
+        }
+
+        .article-card {
+            display: flex;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            align-items: center;
+        }
+
+        .article-img {
+            width: 100px;
+            height: 80px;
+            border-radius: 10px;
+            background-color: #e9ecef;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .article-info h3 {
+            font-size: 20px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+        
+        .article-info p {
+            font-size: 16px;
+            color: var(--text-sub);
+        }
+
+        .encyclopedia-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+            color: var(--primary-orange);
+            font-weight: bold;
+            background: #fff3e0;
+            border-radius: 15px;
+            margin: 20px;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="phone-mockup">
-    <div class="phone-status-bar">
-        <span>10:26</span>
-        <div class="wechat-capsule"><div class="capsule-dot"></div><div class="capsule-line"></div><div class="capsule-circle"></div></div>
-    </div>
-
     <div class="screen">
-        <div id="p1" class="page active">
-            <div class="home-title"><h1>安享伴</h1><p>智慧养老 ・ 触手可及</p></div>
-            <div class="home-buttons">
-                <div class="big-btn btn-call pulsing" onclick="nav('p2')"><div style="font-size:40px">📞</div><span>一键呼叫子女</span></div>
-                <div class="big-btn btn-emergency" onclick="nav('p3')"><div style="font-size:40px">🆘</div><span>一键紧急求助</span></div>
+        
+        <div id="page-home" class="page active">
+            <div class="home-header">
+                <h1>安享伴</h1>
+                <p>一站式智慧适老化养老服务</p>
             </div>
+            
+            <button class="big-btn btn-call" onclick="navTo('page-call')">一键呼叫子女</button>
+            <button class="big-btn btn-emergency" onclick="navTo('page-emergency')">一键紧急求助</button>
+            
             <div class="home-links">
-                <div class="link-item" onclick="nav('p4')" style="background:var(--bg-green)"><h3>上门服务</h3></div>
-                <div class="link-item" onclick="nav('p5')" style="background:var(--bg-yellow); color:#333"><h3>生活百科</h3></div>
+                <div class="link-item" onclick="navTo('page-services')">
+                    <span>上门服务</span>
+                </div>
+                <div class="link-item" onclick="navTo('page-encyclopedia')">
+                    <span>生活百科</span>
+                </div>
+                <div class="link-item" onclick="alert('进入使用帮助说明页')">
+                    <span>使用帮助</span>
+                </div>
+            </div>
+            
+            <div class="home-footer">
+                操作简单 · 安全守护 · 贴心陪伴
             </div>
         </div>
 
-        <div id="p2" class="page" style="background:var(--primary-orange); justify-content:center; align-items:center; text-align:center; color:white;">
-            <div style="font-size:80px" class="pulsing">📞</div>
-            <h2 style="font-size:32px; margin-top:20px;">正在呼叫子女...</h2>
-            <button onclick="nav('p1')" style="margin-top:50px; padding:15px 40px; border-radius:30px; border:none; font-weight:bold;">挂断</button>
-        </div>
-
-        <div id="p3" class="page" style="background:var(--primary-red); justify-content:center; align-items:center; text-align:center; color:white; padding:20px;">
-            <div style="font-size:80px">🆘</div>
-            <h2 style="font-size:32px;">救援信息已发出</h2>
-            <div style="background:rgba(0,0,0,0.2); padding:20px; border-radius:20px; margin-top:20px; text-align:left; width:100%;">
-                <p>✅ 已通知子女</p><p>✅ 已通知社区服务站</p><p>✅ GPS 定位已发送</p>
+        <div id="page-call" class="page">
+            <div class="nav-bar">
+                <div class="back-btn" onclick="navTo('page-home')">❮</div>
+                <div class="nav-title">一键呼叫子女</div>
             </div>
-            <button onclick="nav('p1')" style="margin-top:30px; padding:15px 40px; border-radius:30px; border:none; font-weight:bold;">我已安全</button>
-        </div>
-
-        <div id="p4" class="page" style="background:var(--bg-green)">
-            <div class="page-header" style="background:var(--bg-green)"><div class="back-btn" onclick="nav('p1')">❮</div><h2 class="header-title">上门服务</h2></div>
-            <div class="grid-services">
-                <div class="service-box"><img src="https://images.unsplash.com/photo-1516714435131-44d6b64dc092?w=200"><h3>助餐服务</h3></div>
-                <div class="service-box"><img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=200"><h3>助洁服务</h3></div>
-                <div class="service-box"><img src="https://images.unsplash.com/photo-1513159419869-1a3e279a1a0c?w=200"><h3>助浴理发</h3></div>
-                <div class="service-box"><img src="https://images.unsplash.com/photo-1471864190281-a93a307246de?w=200"><h3>代购代缴</h3></div>
+            <div class="status-page">
+                <div class="calling-avatar">📞</div>
+                <div class="status-text">正在呼叫监护人...<br><span style="font-size: 20px; color:#666; font-weight: normal; margin-top:10px; display:block;">请稍候…</span></div>
+                
+                <div class="info-card">
+                    <p><strong>联系人：</strong>子女（已预设）</p>
+                    <p><strong>联系方式：</strong>138****8888</p>
+                    <p><strong>当前位置：</strong>已自动获取</p>
+                </div>
+                
+                <button class="cancel-btn" onclick="navTo('page-home')">取消呼叫</button>
             </div>
-            <button class="big-btn" style="background:var(--bg-deep-blue); margin-top:auto; margin-bottom:20px; justify-content:center;" onclick="alert('预约成功')"><span>一键预约</span></button>
         </div>
 
-        <div id="p5" class="page" style="background:var(--bg-yellow)">
-            <div class="page-header" style="background:var(--bg-yellow); color:#333;"><div class="back-btn" onclick="nav('p1')" style="background:rgba(0,0,0,0.1)">❮</div><h2>生活百科</h2></div>
-            <div class="wiki-card"><img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?w=100"><div><h4>防诈骗手册</h4><p>守好养老钱</p></div></div>
-            <div class="wiki-card"><img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=100"><div><h4>养生小常识</h4><p>春季饮食指引</p></div></div>
-            <div style="margin-top:auto; padding:20px; text-align:center; font-weight:bold;">🔊 语音播报模式已开启</div>
+        <div id="page-emergency" class="page">
+            <div class="nav-bar">
+                <div class="back-btn" onclick="navTo('page-home')">❮</div>
+                <div class="nav-title">紧急求助中</div>
+            </div>
+            <div class="status-page">
+                <div class="emergency-icon">🆘</div>
+                <div class="status-text red-alert">求助已发出！</div>
+                
+                <div class="info-card">
+                    <p><strong>已同步通知：</strong></p>
+                    <ul class="sync-list">
+                        <li>✅ 子女</li>
+                        <li>✅ 社区服务中心</li>
+                        <li>✅ 就近志愿者</li>
+                    </ul>
+                    <hr style="border: 0; border-top: 1px dashed #ccc; margin: 15px 0;">
+                    <p><strong>求助时间：</strong>2026-03-23 15:30</p>
+                    <p><strong>实时位置：</strong>兰考县 XX 社区</p>
+                    <p><strong>求助类型：</strong>紧急救援</p>
+                </div>
+                
+                <button class="cancel-btn" onclick="navTo('page-home')">取消求助 (防误触)</button>
+            </div>
         </div>
+
+        <div id="page-services" class="page">
+            <div class="nav-bar">
+                <div class="back-btn" onclick="navTo('page-home')">❮</div>
+                <div class="nav-title">上门服务</div>
+            </div>
+            
+            <div class="service-grid">
+                <div class="service-card">
+                    <img src="service-food.jpg" class="service-img" alt="助餐服务">
+                    <div class="service-title">助餐服务</div>
+                    <div class="service-desc">送餐、营养餐</div>
+                </div>
+                <div class="service-card">
+                    <img src="service-clean.jpg" class="service-img" alt="助洁服务">
+                    <div class="service-title">助洁服务</div>
+                    <div class="service-desc">打扫、整理</div>
+                </div>
+                <div class="service-card">
+                    <img src="service-bath.jpg" class="service-img" alt="助浴/理发">
+                    <div class="service-title">助浴 / 理发</div>
+                    <div class="service-desc">上门照料</div>
+                </div>
+                <div class="service-card">
+                    <img src="service-pay.jpg" class="service-img" alt="代购/代缴">
+                    <div class="service-title">代购 / 代缴</div>
+                    <div class="service-desc">代买、代办缴费</div>
+                </div>
+            </div>
+            
+            <div class="service-bottom">
+                <button class="book-btn" onclick="alert('预约成功！')">一键预约</button>
+                <span class="book-sub">子女可代下单</span>
+            </div>
+        </div>
+
+        <div id="page-encyclopedia" class="page">
+            <div class="nav-bar">
+                <div class="back-btn" onclick="navTo('page-home')">❮</div>
+                <div class="nav-title">生活百科</div>
+            </div>
+            
+            <div class="encyclopedia-content">
+                <div class="section-title">防诈骗提醒</div>
+                <div class="article-card">
+                    <img src="article-scam.jpg" class="article-img" alt="防诈骗">
+                    <div class="article-info">
+                        <h3>电信诈骗防范</h3>
+                        <p>警惕冒充公检法等常见骗局</p>
+                    </div>
+                </div>
+                <div class="article-card">
+                    <img src="article-scam2.jpg" class="article-img" alt="养老诈骗">
+                    <div class="article-info">
+                        <h3>养老诈骗案例</h3>
+                        <p>保健品推销防骗安全小贴士</p>
+                    </div>
+                </div>
+
+                <div class="section-title" style="margin-top: 25px; color: #2a9d8f; border-left-color: #2a9d8f;">健康养生堂</div>
+                <div class="article-card">
+                    <img src="article-health.jpg" class="article-img" alt="养生">
+                    <div class="article-info">
+                        <h3>时令养生与慢病</h3>
+                        <p>春季饮食与适度运动指导</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="encyclopedia-footer">
+                🔊 每日更新 · 大字阅读 · 语音播报
+            </div>
+        </div>
+
     </div>
 </div>
 
 <script>
-    function nav(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+    // 页面路由切换逻辑
+    function navTo(pageId) {
+        // 移除所有页面的 active 类
+        const pages = document.querySelectorAll('.page');
+        pages.forEach(page => {
+            page.classList.remove('active');
+        });
+        
+        // 为目标页面添加 active 类触发动画
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) {
+            targetPage.classList.add('active');
+            // 如果是回到首页，确保滚动条在最上面
+            if(pageId === 'page-home') {
+                targetPage.scrollTop = 0;
+            }
+        }
     }
 </script>
 
