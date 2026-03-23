@@ -3,26 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>安享伴 - 智慧养老展示</title>
+    <title>安享伴 - 智慧养老全演示</title>
     <style>
         :root {
-            --primary-orange: #FF9800;
-            --primary-red: #E63946;
-            --bg-light: #F8F9FA;
-            --text-dark: #333333;
-            --card-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            --orange-gradient: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%);
+            --red-gradient: linear-gradient(135deg, #FF5252 0%, #D32F2F 100%);
+            --blue-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --bg-color: #F5F7FA;
+            --text-main: #1A1A1A;
+            --text-gray: #757575;
+            --white: #FFFFFF;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-family: "PingFang SC", "Hiragino Sans GB", sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: #d1d9e6;
+            background-color: #BDC3C7;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -30,326 +32,229 @@
             overflow: hidden;
         }
 
-        /* 手机外壳 */
-        .phone-case {
-            width: 380px;
+        /* 手机框模拟 */
+        .phone-frame {
+            width: 385px;
             height: 820px;
-            background: #1a1a1a;
-            border-radius: 55px;
+            background: #000;
+            border-radius: 50px;
             padding: 12px;
             position: relative;
-            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.4);
         }
 
-        /* 屏幕内部 */
         .screen {
             width: 100%;
             height: 100%;
-            background-color: var(--bg-light);
-            border-radius: 43px;
+            background-color: var(--bg-color);
+            border-radius: 40px;
             overflow: hidden;
             position: relative;
             display: flex;
             flex-direction: column;
         }
 
-        /* 顶部手机状态栏 */
+        /* 状态栏 & 微信胶囊 */
         .status-bar {
             height: 44px;
-            padding: 0 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 30px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: bold;
             z-index: 10;
         }
-
-        /* 微信胶囊按钮 */
-        .wechat-capsule {
-            position: absolute;
-            top: 50px;
-            right: 15px;
-            width: 88px;
-            height: 32px;
-            background: rgba(255,255,255,0.8);
-            border: 1px solid rgba(0,0,0,0.1);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-evenly;
-            z-index: 100;
+        .island { width: 110px; height: 25px; background: #000; border-radius: 15px; position: absolute; left: 50%; transform: translateX(-50%); top: 10px; }
+        
+        .wechat-menu {
+            position: absolute; top: 55px; right: 15px; width: 87px; height: 32px;
+            background: rgba(255,255,255,0.8); border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 20px; display: flex; align-items: center; justify-content: space-evenly; z-index: 100;
         }
-        .capsule-dot { width: 18px; height: 18px; display:flex; align-items:center; justify-content:center; font-weight:bold; }
-        .capsule-line { width: 1px; height: 16px; background: rgba(0,0,0,0.1); }
-        .capsule-circle { width: 16px; height: 16px; border: 3px solid #333; border-radius: 50%; }
+        .w-dot { width: 4px; height: 4px; background: #000; border-radius: 50%; box-shadow: 8px 0 0 #000, -8px 0 0 #000; }
+        .w-line { width: 1px; height: 16px; background: rgba(0,0,0,0.1); }
+        .w-circle { width: 16px; height: 16px; border: 2.5px solid #000; border-radius: 50%; }
 
-        /* 页面基础 */
+        /* 页面切换逻辑 */
         .page {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            padding: 90px 20px 30px;
-            display: flex;
-            flex-direction: column;
-            opacity: 0;
-            transform: translateX(100%);
-            transition: all 0.4s ease-out;
-            background: var(--bg-light);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            padding: 95px 20px 20px; display: flex; flex-direction: column;
+            background: var(--bg-color); opacity: 0; transform: scale(1.02);
+            pointer-events: none; transition: all 0.35s ease-in-out;
+            overflow-y: auto;
         }
+        .page.active { opacity: 1; transform: scale(1); pointer-events: auto; }
 
-        .page.active {
-            opacity: 1;
-            transform: translateX(0);
-        }
+        /* --- 第1页：首页 --- */
+        .brand { text-align: center; margin-bottom: 30px; }
+        .brand h1 { font-size: 40px; font-weight: 900; color: var(--text-main); }
+        .brand p { font-size: 18px; color: var(--text-gray); margin-top: 5px; }
 
-        /* 首页内容排版 */
-        .home-title {
-            text-align: center;
-            margin-bottom: 30px;
+        .btn-large {
+            width: 100%; height: 165px; margin-bottom: 20px; border-radius: 30px; border: none;
+            display: flex; justify-content: center; align-items: center; color: #FFF;
+            cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
-        .home-title h1 { font-size: 38px; color: var(--text-dark); letter-spacing: 2px; }
-        .home-title p { font-size: 18px; color: #666; margin-top: 5px; }
+        .btn-large span { font-size: 34px; font-weight: 900; }
+        .bg-orange { background: var(--orange-gradient); }
+        .bg-red { background: var(--red-gradient); }
 
-        /* 首页大按钮 - 强化尺寸 */
-        .main-btn {
-            width: 90%;
-            margin: 0 auto 25px;
-            height: 180px; /* 增加高度 */
-            border-radius: 30px;
-            border: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            cursor: pointer;
-            box-shadow: var(--card-shadow);
-            transition: transform 0.2s;
+        /* 底部入口 - 防止折行 */
+        .home-nav {
+            margin-top: auto; display: flex; justify-content: space-around;
+            background: #FFF; padding: 20px 10px; border-radius: 25px;
         }
-        .main-btn:active { transform: scale(0.95); }
-        .main-btn .icon { font-size: 60px; margin-bottom: 10px; }
-        .main-btn span { font-size: 30px; font-weight: bold; }
+        .nav-cell { display: flex; flex-direction: column; align-items: center; width: 33%; cursor: pointer; }
+        .nav-cell .icon-sq { width: 50px; height: 50px; background: #F0F4F8; border-radius: 15px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; }
+        .nav-cell span { font-size: 18px; font-weight: bold; white-space: nowrap; }
 
-        .btn-orange { background: linear-gradient(135deg, #FFB74D, #FF9800); }
-        .btn-red { background: linear-gradient(135deg, #FF5252, #E63946); }
+        /* --- 第2/3页：状态页 --- */
+        .status-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .status-msg { font-size: 32px; font-weight: 900; margin: 20px 0; }
+        .info-panel { background: #FFF; border-radius: 20px; padding: 20px; width: 100%; text-align: left; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .info-panel p { font-size: 18px; margin-bottom: 12px; font-weight: 500; }
+        .info-panel p b { color: var(--text-gray); }
 
-        /* 底部入口 - 优化排版防折行 */
-        .bottom-nav {
-            margin-top: auto;
-            display: flex;
-            justify-content: space-around;
-            padding: 20px 0;
-            background: white;
-            border-radius: 25px;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
+        /* --- 第4页：上门服务 --- */
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .service-box {
+            background: #FFF; border-radius: 22px; padding: 15px; text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.04);
         }
+        .img-placeholder { width: 100%; height: 100px; background: #EEE; border-radius: 15px; margin-bottom: 12px; overflow: hidden; }
+        .img-placeholder img { width: 100%; height: 100%; object-fit: cover; }
+        .service-box h3 { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
+        .service-box p { font-size: 16px; color: var(--text-gray); font-weight: 500; }
 
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            width: 30%;
-        }
-        .nav-item .icon-box {
-            width: 50px;
-            height: 50px;
-            background: #FFF3E0;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-        .nav-item span {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--text-dark);
-            white-space: nowrap; /* 核心修复：强制不换行 */
-        }
+        .book-bar { margin-top: auto; padding-top: 20px; }
+        .btn-full { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--blue-gradient); color: #FFF; font-size: 24px; font-weight: 900; cursor: pointer; }
 
-        .footer-text {
-            text-align: center;
-            font-size: 14px;
-            color: #999;
-            margin-top: 20px;
-        }
+        /* --- 第5页：生活百科 --- */
+        .wiki-section { margin-bottom: 25px; }
+        .section-head { font-size: 24px; font-weight: 900; border-left: 6px solid #FF9800; padding-left: 12px; margin-bottom: 15px; }
+        .wiki-card { background: #FFF; border-radius: 20px; padding: 15px; display: flex; align-items: center; margin-bottom: 15px; }
+        .wiki-card .thumb { width: 80px; height: 80px; background: #EEE; border-radius: 12px; margin-right: 15px; flex-shrink: 0; }
+        .wiki-card .info h4 { font-size: 20px; font-weight: 800; margin-bottom: 5px; }
+        .wiki-card .info p { font-size: 16px; color: var(--text-gray); }
 
-        /* 子页面通用样式 */
-        .sub-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .back-btn { font-size: 24px; cursor: pointer; padding-right: 15px; }
-        .sub-title { font-size: 24px; font-weight: bold; }
+        .wiki-footer { margin-top: auto; padding: 20px; background: #FFF3E0; border-radius: 20px; text-align: center; font-size: 18px; font-weight: bold; color: #FF9800; }
 
-        /* 动态效果 */
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .calling-icon { font-size: 80px; margin: 60px auto; animation: pulse 2s infinite; }
-
-        /* 服务卡片 */
-        .service-list { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .service-card {
-            background: white;
-            border-radius: 20px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .service-card img { width: 100%; height: 100px; background: #eee; border-radius: 10px; margin-bottom: 10px; object-fit: cover;}
-        .service-card h4 { font-size: 20px; margin-bottom: 5px; }
-        .service-card p { font-size: 14px; color: #666; }
+        /* 通用返回头 */
+        .page-header { display: flex; align-items: center; margin-bottom: 20px; }
+        .btn-back { width: 44px; height: 44px; background: #FFF; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; cursor: pointer; margin-right: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .header-title { font-size: 26px; font-weight: 900; }
 
     </style>
 </head>
 <body>
 
-<div class="phone-case">
+<div class="phone-frame">
     <div class="screen">
-        <div class="status-bar">
-            <span>20:26</span>
-            <div style="display: flex; gap: 5px;">
-                <span>📶</span><span>🔋</span>
+        <div class="island"></div>
+        <div class="status-bar"><span>20:26</span><span>📶 🔋</span></div>
+        <div class="wechat-menu"><div class="w-dot"></div><div class="w-line"></div><div class="w-circle"></div></div>
+
+        <div id="p1" class="page active">
+            <div class="brand"><h1>安享伴</h1><p>一站式智慧适老化养老服务</p></div>
+            <button class="btn-large bg-orange" onclick="nav('p2')"><span>一键呼叫子女</span></button>
+            <button class="btn-large bg-red" onclick="nav('p3')"><span>一键紧急求助</span></button>
+            <div class="home-nav">
+                <div class="nav-cell" onclick="nav('p4')"><div class="icon-sq" style="color:#00C2FF">🏠</div><span>上门服务</span></div>
+                <div class="nav-cell" onclick="nav('p5')"><div class="icon-sq" style="color:#FF9800">📖</div><span>生活百科</span></div>
+                <div class="nav-cell" onclick="alert('进入使用帮助')"><div class="icon-sq" style="color:#4CAF50">❓</div><span>使用帮助</span></div>
+            </div>
+            <p style="text-align:center; color:#BBB; font-size:14px; margin-top:15px; font-weight:bold;">操作简单 · 安全守护 · 贴心陪伴</p>
+        </div>
+
+        <div id="p2" class="page">
+            <div class="page-header"><div class="btn-back" onclick="nav('p1')">❮</div><div class="header-title">一键呼叫子女</div></div>
+            <div class="status-center">
+                <div style="width:120px; height:120px; border-radius:50%; background:var(--orange-gradient); display:flex; align-items:center; justify-content:center; color:#FFF; font-size:50px;">☏</div>
+                <div class="status-msg" style="color:#FF9800;">正在呼叫监护人...</div>
+                <div class="info-panel">
+                    <p><b>联系人：</b>子女（已预设）</p>
+                    <p><b>联系方式：</b>138****8888</p>
+                    <p><b>当前位置：</b>已自动获取</p>
+                </div>
+            </div>
+            <button class="btn-full" style="background:#EEE; color:#666;" onclick="nav('p1')">取消呼叫</button>
+        </div>
+
+        <div id="p3" class="page">
+            <div class="page-header"><div class="btn-back" onclick="nav('p1')">❮</div><div class="header-title">紧急求助中</div></div>
+            <div class="status-center">
+                <div style="width:120px; height:120px; border-radius:50%; background:var(--red-gradient); display:flex; align-items:center; justify-content:center; color:#FFF; font-size:50px;">!</div>
+                <div class="status-msg" style="color:#D32F2F;">求助已发出！</div>
+                <div class="info-panel" style="background:#FFEBEA; border:2px solid #FF5252;">
+                    <p style="color:#D32F2F; font-weight:900;">✅ 已同步通知：子女</p>
+                    <p style="color:#D32F2F; font-weight:900;">✅ 已通知社区服务中心</p>
+                    <p style="color:#D32F2F; font-weight:900;">✅ 已通知就近志愿者</p>
+                    <hr style="margin:10px 0; border:0; border-top:1px dashed #D32F2F;">
+                    <p><b>求助时间：</b>2026-03-23 15:30</p>
+                    <p><b>实时位置：</b>兰考县 XX 社区</p>
+                </div>
+            </div>
+            <button class="btn-full" style="background:#EEE; color:#666; margin-top:20px;" onclick="nav('p1')">取消求助 (防误触)</button>
+        </div>
+
+        <div id="p4" class="page">
+            <div class="page-header"><div class="btn-back" onclick="nav('p1')">❮</div><div class="header-title">上门服务</div></div>
+            <div class="grid-container">
+                <div class="service-box">
+                    <div class="img-placeholder"><img src="service-food.jpg"></div>
+                    <h3>助餐服务</h3><p>送餐、营养餐</p>
+                </div>
+                <div class="service-box">
+                    <div class="img-placeholder"><img src="service-clean.jpg"></div>
+                    <h3>助洁服务</h3><p>打扫、整理</p>
+                </div>
+                <div class="service-box">
+                    <div class="img-placeholder"><img src="service-bath.jpg"></div>
+                    <h3>助浴/理发</h3><p>上门照料</p>
+                </div>
+                <div class="service-box">
+                    <div class="img-placeholder"><img src="service-pay.jpg"></div>
+                    <h3>代购/代缴</h3><p>代买、缴费</p>
+                </div>
+            </div>
+            <div class="book-bar">
+                <button class="btn-full" onclick="alert('预约申请已提交')">一键预约</button>
+                <p style="text-align:center; margin-top:10px; color:#757575; font-weight:bold;">子女可在手机端代下单</p>
             </div>
         </div>
 
-        <div class="wechat-capsule">
-            <div class="capsule-dot">•••</div>
-            <div class="capsule-line"></div>
-            <div class="capsule-circle"></div>
+        <div id="p5" class="page">
+            <div class="page-header"><div class="btn-back" onclick="nav('p1')">❮</div><div class="header-title">生活百科</div></div>
+            <div class="wiki-section">
+                <div class="section-head">防诈骗提醒</div>
+                <div class="wiki-card">
+                    <div class="thumb"><img src="article-scam.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:12px;"></div>
+                    <div class="info"><h4>电信诈骗防范</h4><p>识别常见骗局</p></div>
+                </div>
+                <div class="wiki-card">
+                    <div class="thumb"><img src="article-scam2.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:12px;"></div>
+                    <div class="info"><h4>安全小贴士</h4><p>居家生活安全手册</p></div>
+                </div>
+            </div>
+            <div class="wiki-section">
+                <div class="section-head" style="border-color:#4CAF50;">健康养生堂</div>
+                <div class="wiki-card">
+                    <div class="thumb"><img src="article-health.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:12px;"></div>
+                    <div class="info"><h4>时令养生建议</h4><p>饮食与日常运动</p></div>
+                </div>
+            </div>
+            <div class="wiki-footer">🔊 每日更新 · 大字阅读 · 语音播报</div>
         </div>
 
-        <div id="home" class="page active">
-            <div class="home-title">
-                <h1>安享伴</h1>
-                <p>一站式智慧适老化养老服务</p>
-            </div>
-
-            <button class="main-btn btn-orange" onclick="go('call-page')">
-                <div class="icon">📞</div>
-                <span>一键呼叫子女</span>
-            </button>
-
-            <button class="main-btn btn-red" onclick="go('sos-page')">
-                <div class="icon">🆘</div>
-                <span>一键紧急求助</span>
-            </button>
-
-            <div class="bottom-nav">
-                <div class="nav-item" onclick="go('service-page')">
-                    <div class="icon-box">🏠</div>
-                    <span>上门服务</span>
-                </div>
-                <div class="nav-item" onclick="go('wiki-page')">
-                    <div class="icon-box">💡</div>
-                    <span>生活百科</span>
-                </div>
-                <div class="nav-item" onclick="alert('点击了帮助')">
-                    <div class="icon-box">❓</div>
-                    <span>使用帮助</span>
-                </div>
-            </div>
-
-            <p class="footer-text">操作简单 · 安全守护 · 贴心陪伴</p>
-        </div>
-
-        <div id="call-page" class="page">
-            <div class="sub-header">
-                <span class="back-btn" onclick="go('home')">❮</span>
-                <span class="sub-title">正在呼叫</span>
-            </div>
-            <div class="calling-icon">📞</div>
-            <h2 style="text-align: center; font-size: 32px;">正在连接监护人</h2>
-            <div style="background:white; padding:20px; border-radius:20px; margin-top:30px;">
-                <p style="font-size:20px; margin-bottom:10px;">联系人：儿子</p>
-                <p style="font-size:20px;">电话：138****8888</p>
-            </div>
-            <button onclick="go('home')" style="margin-top:auto; padding:20px; border-radius:20px; background:#ddd; border:none; font-size:20px; font-weight:bold;">取消呼叫</button>
-        </div>
-
-        <div id="sos-page" class="page">
-            <div class="sub-header">
-                <span class="back-btn" onclick="go('home')">❮</span>
-                <span class="sub-title">紧急救援</span>
-            </div>
-            <div class="calling-icon" style="color:var(--primary-red)">🆘</div>
-            <h2 style="text-align: center; font-size: 32px; color:var(--primary-red)">报警信息已发出</h2>
-            <div style="background:#FFEBEA; padding:20px; border-radius:20px; margin-top:30px; border:2px solid var(--primary-red)">
-                <p style="font-size:20px; font-weight:bold;">✅ 已通知子女</p>
-                <p style="font-size:20px; font-weight:bold;">✅ 已通知社区服务中心</p>
-            </div>
-            <button onclick="go('home')" style="margin-top:auto; padding:20px; border-radius:20px; background:#eee; border:none; font-size:20px; font-weight:bold;">我已安全 (取消)</button>
-        </div>
-
-        <div id="service-page" class="page">
-            <div class="sub-header">
-                <span class="back-btn" onclick="go('home')">❮</span>
-                <span class="sub-title">上门服务</span>
-            </div>
-            <div class="service-list">
-                <div class="service-card">
-                    <img src="service-food.jpg" alt="助餐">
-                    <h4>助餐服务</h4>
-                    <p>送餐、营养餐</p>
-                </div>
-                <div class="service-card">
-                    <img src="service-clean.jpg" alt="助洁">
-                    <h4>助洁服务</h4>
-                    <p>打扫、整理</p>
-                </div>
-                <div class="service-card">
-                    <img src="service-bath.jpg" alt="助浴">
-                    <h4>助浴/理发</h4>
-                    <p>上门照料</p>
-                </div>
-                <div class="service-card">
-                    <img src="service-pay.jpg" alt="代购">
-                    <h4>代购/代缴</h4>
-                    <p>代买、缴费</p>
-                </div>
-            </div>
-            <button style="margin-top:30px; padding:20px; border-radius:20px; background:var(--primary-orange); color:white; border:none; font-size:24px; font-weight:bold;">一键预约服务</button>
-        </div>
-
-        <div id="wiki-page" class="page">
-            <div class="sub-header">
-                <span class="back-btn" onclick="go('home')">❮</span>
-                <span class="sub-title">生活百科</span>
-            </div>
-            <div style="background:white; padding:15px; border-radius:20px; margin-bottom:15px; display:flex; align-items:center;">
-                <img src="article-scam.jpg" style="width:80px; height:60px; border-radius:10px; margin-right:15px; background:#eee;">
-                <div>
-                    <h4 style="font-size:20px;">防诈骗提醒</h4>
-                    <p style="color:#666;">电信诈骗防范知识</p>
-                </div>
-            </div>
-            <div style="background:white; padding:15px; border-radius:20px; display:flex; align-items:center;">
-                <img src="article-health.jpg" style="width:80px; height:60px; border-radius:10px; margin-right:15px; background:#eee;">
-                <div>
-                    <h4 style="font-size:20px;">健康养生堂</h4>
-                    <p style="color:#666;">时令养生小知识</p>
-                </div>
-            </div>
-            <div style="margin-top:auto; padding:20px; background:#FFF3E0; border-radius:20px; text-align:center; font-weight:bold; color:var(--primary-orange)">
-                🔊 点击可语音播放文字
-            </div>
-        </div>
     </div>
 </div>
 
 <script>
-    function go(pageId) {
+    function nav(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
+        document.getElementById(id).classList.add('active');
+        document.getElementById(id).scrollTop = 0;
     }
 </script>
 
